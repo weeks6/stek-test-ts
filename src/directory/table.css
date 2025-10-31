@@ -1,0 +1,46 @@
+.table__row,
+.table__header {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) 40px;
+    gap: 4px;
+}
+
+.table__body {
+    display: flex;
+    flex-direction: column;
+}
+
+.table__row {
+    cursor: pointer;
+    min-height: 40px;
+}
+
+.table__row>div {
+    border-left: 1px solid #ccc;
+    padding: 4px 8px;
+}
+
+.table__row>div:first-child {
+    border-left: none;
+}
+
+.table__delete-button {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    width: 32px;
+    height: 32px;
+    align-self: center;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+@media screen and (hover:hover) {
+    .table__row:hover {
+        background-color: #f1f1f1;
+    }
+
+    .table__delete-button:hover {
+        background-color: darkred;
+    }
+}
