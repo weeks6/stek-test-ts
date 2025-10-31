@@ -1,3 +1,7 @@
+.table {
+    overflow-x: auto;
+}
+
 .table__row,
 .table__header {
     display: grid;
@@ -16,6 +20,7 @@
 }
 
 .table__row>div {
+    min-width: 120px;
     border-left: 1px solid #ccc;
     padding: 4px 8px;
 }
@@ -26,7 +31,6 @@
 
 .table__delete-button {
     background-color: red;
-    color: white;
     font-weight: bold;
     width: 32px;
     height: 32px;
@@ -35,6 +39,41 @@
     transition: background-color 0.2s ease-in-out;
 }
 
+.table__delete-button svg path {
+    stroke: white;
+}
+
+.table__header-button {
+    width: 100%;
+    height: 40px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 8px;
+}
+
+.table__header-button svg {
+    width: 20px;
+    height: 20px;
+    display: none;
+    transition: transform 0.1s ease-in-out;
+}
+
+.table__header-button--asc svg,
+.table__header-button--desc svg {
+    display: block;
+}
+
+.table__header-button--asc svg {}
+
+.table__header-button--desc svg {
+    transform: rotate(180deg);
+}
+
+
 @media screen and (hover:hover) {
     .table__row:hover {
         background-color: #f1f1f1;
@@ -42,5 +81,9 @@
 
     .table__delete-button:hover {
         background-color: darkred;
+    }
+
+    .table__header-button:hover {
+        background-color: #f1f1f1;
     }
 }

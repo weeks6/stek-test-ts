@@ -1,24 +1,28 @@
-import type { DirectoryEntry, EntryAddress } from './model';
+import type { DirectoryEntry } from './model';
 import { directoryStore } from './store';
+
+import DeleteSvg from '../../assets/icons/delete.svg?raw';
+import { updateCounter } from './counter';
 
 function formatPhoneNumber(phone_number: string): string {
 	return phone_number.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '+7 $1 $2-$3-$4');
 }
 
-function formatAddress(address: EntryAddress): string {
-	return `${address.city}, ${address.street}, ${address.building}`;
-}
-
 function removeEntryHandler(evt: MouseEvent): void {
-	const target = evt.target as HTMLButtonElement;
-	const key = target.getAttribute('data-delete-button');
+	const target = evt.target as HTMLElement;
+
+	const key = target
+		.closest('[data-delete-button]')
+		?.getAttribute('data-delete-button');
 
 	if (!key) {
 		console.warn('key not found');
 		return;
 	}
 
-	directoryStore.deleteEntry(key);
+	directoryStore.deleteEntry(parseInt(key));
+	updateCounter(directoryStore.list.length);
+
 	const row = document.querySelector(`[data-id="${key}"]`);
 
 	if (row) {
@@ -27,10 +31,10 @@ function removeEntryHandler(evt: MouseEvent): void {
 	}
 }
 
-function renderTableRow(key: string, entry: DirectoryEntry): HTMLDivElement {
+function renderTableRow(entry: DirectoryEntry): HTMLDivElement {
 	const row = document.createElement('div');
 
-	row.setAttribute('data-id', key);
+	row.setAttribute('data-id', entry.id.toString());
 	row.classList.add('table__row');
 
 	row.appendChild(document.createElement('div')).textContent = entry.name;
@@ -38,14 +42,18 @@ function renderTableRow(key: string, entry: DirectoryEntry): HTMLDivElement {
 	row.appendChild(document.createElement('div')).textContent =
 		formatPhoneNumber(entry.phone_number);
 
-	row.appendChild(document.createElement('div')).textContent = formatAddress(
-		entry.address
-	);
+	row.appendChild(document.createElement('div')).textContent =
+		directoryStore.formatAddress(entry.address);
 
-	const deleteButton = row.appendChild(document.createElement('button'));
-	deleteButton.setAttribute('data-delete-button', key);
-	deleteButton.textContent = 'X';
+	const deleteButton = document.createElement('button');
+	deleteButton.setAttribute('data-delete-button', entry.id.toString());
 	deleteButton.classList.add('table__delete-button');
+
+	const icon = document.createElement('svg');
+	icon.innerHTML = DeleteSvg;
+	deleteButton.appendChild(icon);
+
+	row.appendChild(deleteButton);
 
 	deleteButton.addEventListener('click', removeEntryHandler);
 
@@ -62,10 +70,22 @@ export function renderTable(tableBodySelector: string): void {
 		return;
 	}
 
-	const entries = directoryStore.list;
+	let entries = [...directoryStore.list];
 
-	Object.entries(entries).forEach(([entryId, entry]) => {
-		const tableRow = renderTableRow(entryId, entry);
+	if (directoryStore.searchQuery) {
+		entries = directoryStore.filterEntriesByFullName(entries);
+	}
+
+	if (directoryStore.sortBy) {
+		entries = directoryStore.sort(entries);
+	}
+
+	tableBody.innerHTML = '';
+
+	entries.forEach((entry) => {
+		const tableRow = renderTableRow(entry);
 		tableBody.appendChild(tableRow);
 	});
+
+	updateCounter(entries.length);
 }
