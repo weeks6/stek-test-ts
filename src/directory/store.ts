@@ -7,16 +7,23 @@ interface IDirectoryStore {
 	sortBy?: SortableColumns;
 	sortDirection?: 'asc' | 'desc';
 	searchQuery?: string;
-	deleteEntry(key: number): void;
+	totalPages: number;
+	perPage: number;
+	page: number;
+	formatAddress(address: EntryAddress): string;
 	addEntry(entry: Omit<DirectoryEntry, 'id'>): void;
 	editEntry(id: number, entry: DirectoryEntry): void;
+	deleteEntry(key: number): void;
 	filterEntriesByFullName(entries: DirectoryEntry[]): DirectoryEntry[];
 	sort(entries: DirectoryEntry[]): DirectoryEntry[];
-	formatAddress(address: EntryAddress): string;
+	paginate(entries: DirectoryEntry[]): DirectoryEntry[];
 }
 
 export const directoryStore: IDirectoryStore = {
 	list: [],
+	page: 1,
+	perPage: 20,
+	totalPages: 0,
 	formatAddress(address: EntryAddress): string {
 		return `${address.city}, ${address.street}, ${address.building}`;
 	},
@@ -34,8 +41,10 @@ export const directoryStore: IDirectoryStore = {
 	filterEntriesByFullName(entries: DirectoryEntry[]): DirectoryEntry[] {
 		if (!this.searchQuery) return entries;
 
+		const query = this.searchQuery?.trim().toLocaleLowerCase() ?? '';
+
 		return entries.filter((entry) =>
-			entry.full_name.includes(this.searchQuery!)
+			entry.full_name.toLocaleLowerCase().includes(query)
 		);
 	},
 
@@ -60,6 +69,13 @@ export const directoryStore: IDirectoryStore = {
 				return getValue(a[sortBy]) < getValue(b[sortBy]) ? -1 : 1;
 			}
 		});
+	},
+
+	paginate(entries: DirectoryEntry[]): DirectoryEntry[] {
+		return entries.slice(
+			(this.page - 1) * this.perPage,
+			this.page * this.perPage
+		);
 	},
 };
 

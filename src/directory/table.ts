@@ -3,17 +3,18 @@ import { directoryStore } from './store';
 
 import DeleteSvg from '../../assets/icons/delete.svg?raw';
 import { updateCounter } from './counter';
+import { renderPagesContainer } from './pagination';
 
 function formatPhoneNumber(phone_number: string): string {
 	return phone_number.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '+7 $1 $2-$3-$4');
 }
 
 function removeEntryHandler(evt: MouseEvent): void {
-	const target = evt.target as HTMLElement;
+	const target = (evt.target as HTMLElement).closest(
+		'[data-delete-button]'
+	) as HTMLButtonElement;
 
-	const key = target
-		.closest('[data-delete-button]')
-		?.getAttribute('data-delete-button');
+	const key = target?.getAttribute('data-delete-button');
 
 	if (!key) {
 		console.warn('key not found');
@@ -23,12 +24,9 @@ function removeEntryHandler(evt: MouseEvent): void {
 	directoryStore.deleteEntry(parseInt(key));
 	updateCounter(directoryStore.list.length);
 
-	const row = document.querySelector(`[data-id="${key}"]`);
+	target.removeEventListener('click', removeEntryHandler);
 
-	if (row) {
-		target.removeEventListener('click', removeEntryHandler);
-		row.remove();
-	}
+	renderTable('#table-body');
 }
 
 function renderTableRow(entry: DirectoryEntry): HTMLDivElement {
@@ -80,12 +78,21 @@ export function renderTable(tableBodySelector: string): void {
 		entries = directoryStore.sort(entries);
 	}
 
+	// should be updated before pagination
+	updateCounter(entries.length);
+
+	directoryStore.totalPages = Math.ceil(
+		entries.length / directoryStore.perPage
+	);
+
+	entries = directoryStore.paginate(entries);
+
+	renderPagesContainer();
+
 	tableBody.innerHTML = '';
 
 	entries.forEach((entry) => {
 		const tableRow = renderTableRow(entry);
 		tableBody.appendChild(tableRow);
 	});
-
-	updateCounter(entries.length);
 }

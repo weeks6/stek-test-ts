@@ -1,0 +1,29 @@
+.pagination {
+    display: flex;
+    align-items: center;
+    align-self: center;
+}
+
+.pagination__button {
+    width: 32px;
+    height: 32px;
+    transition: background-color 0.1s ease-in-out;
+    font-weight: 700;
+    color: #333;
+    border-radius: 4px;
+}
+
+.pagination__button--active {
+    color: #fff;
+    background-color: #333;
+}
+
+@media screen and (hover:hover) {
+    .pagination__button:hover {
+        background-color: #f1f1f1;
+    }
+
+    .pagination__button--active:hover {
+        background-color: #333;
+    }
+}

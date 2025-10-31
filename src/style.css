@@ -1,6 +1,7 @@
 @import './directory/table.css';
 @import './directory/search.css';
 @import './directory/counter.css';
+@import './directory/pagination.css';
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
