@@ -1,3 +1,5 @@
+Версия на Vue: https://github.com/weeks6/stek-test-vue
+
 ### Страница
 
 <img width="1568" height="932" alt="image" src="https://github.com/user-attachments/assets/0f9a94d0-9df0-403f-b620-aae66871d4cd" />
