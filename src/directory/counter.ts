@@ -5,5 +5,5 @@ export function updateCounter(value: number) {
 
 	if (!counterElement) return;
 
-	counterElement.textContent = `${value} записей`;
+	counterElement.textContent = `${value} организаций`;
 }
