@@ -1,7 +1,12 @@
+export let modalOpened = false;
+
 export function openModal(
 	templateSelector: string,
-	onMount: (close: Function) => Function
+	title: string,
+	onMount: (modal: HTMLDivElement, close: Function) => Function
 ) {
+	if (modalOpened) return;
+
 	const modalTemplate = document.querySelector(
 		templateSelector
 	) as HTMLTemplateElement;
@@ -22,6 +27,11 @@ export function openModal(
 
 	modalBody.appendChild(modalTemplate.content.cloneNode(true));
 
+	const titleElement = modalBody.querySelector(
+		'[data-modal-title]'
+	) as HTMLDivElement;
+	titleElement.textContent = title;
+
 	modalContainer.classList.add('modal-container--active');
 
 	const closeButton = modalBody.querySelector(
@@ -35,10 +45,12 @@ export function openModal(
 		cleanup();
 
 		modalBody.innerHTML = '';
+		modalOpened = false;
 	}
 
 	closeButton.addEventListener('click', closeHandler);
 	modalOverlay.addEventListener('click', closeHandler);
 
-	const cleanup = onMount(closeHandler);
+	modalOpened = true;
+	const cleanup = onMount(modalBody, closeHandler);
 }

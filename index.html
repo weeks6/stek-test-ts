@@ -82,7 +82,10 @@
       </label>
 
 
-      <section class="table">
+      <section
+        class="table"
+        data-table
+      >
         <div class="table__header">
           <button
             class="table__header-button"
@@ -240,12 +243,14 @@
       ></div>
     </div>
 
-    <template id="add-modal">
+    <template id="entry-modal">
 
-      <div class="add-modal">
+      <div
+        class="entry-modal"
+        tabindex="-1"
+      >
         <div class="modal-heading">
-          <h3>
-            Добавить организацию
+          <h3 data-modal-title>
           </h3>
           <button
             data-modal-close
@@ -267,7 +272,7 @@
 
         <form
           class="form"
-          id="add-form"
+          id="entry-form"
         >
           <label class="form__label">
             <span class="form__label-text">Название</span>
@@ -351,7 +356,6 @@
                 </div>
 
               </label>
-
             </fieldset>
           </label>
 

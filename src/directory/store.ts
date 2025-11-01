@@ -12,7 +12,7 @@ interface IDirectoryStore {
 	page: number;
 	formatAddress(address: EntryAddress): string;
 	addEntry(entry: Omit<DirectoryEntry, 'id'>): void;
-	editEntry(id: number, entry: DirectoryEntry): void;
+	editEntry(id: number, entry: Omit<DirectoryEntry, 'id'>): void;
 	deleteEntry(key: number): void;
 	filterEntriesByFullName(entries: DirectoryEntry[]): DirectoryEntry[];
 	sort(entries: DirectoryEntry[]): DirectoryEntry[];
@@ -31,12 +31,12 @@ export const directoryStore: IDirectoryStore = {
 		this.list = this.list.filter((entry) => entry.id !== id);
 	},
 	addEntry(entry: Omit<DirectoryEntry, 'id'>): void {
-		const newId = this.list.length;
+		const newId = Math.max(...this.list.map((e) => e.id), 0) + 1;
 
 		this.list.push({ ...entry, id: newId });
 	},
-	editEntry(id: number, entry: DirectoryEntry): void {
-		this.list = this.list.map((e) => (e.id === id ? entry : e));
+	editEntry(id: number, entry: Omit<DirectoryEntry, 'id'>): void {
+		this.list = this.list.map((e) => (e.id === id ? { ...entry, id } : e));
 	},
 	filterEntriesByFullName(entries: DirectoryEntry[]): DirectoryEntry[] {
 		if (!this.searchQuery) return entries;

@@ -9,9 +9,9 @@ export function setupListeners() {
 	) as HTMLButtonElement;
 
 	addButton.addEventListener('click', () => {
-		openModal('#add-modal', (close) => {
+		openModal('#entry-modal', 'Добавить организацию', (_, close) => {
 			const cleanup = setupFormListener(
-				'#add-form',
+				'#entry-form',
 				(data: {
 					name: string;
 					full_name: string;

@@ -4,15 +4,33 @@ import { directoryStore } from './store';
 import DeleteSvg from '../../assets/icons/delete.svg?raw';
 import { updateCounter } from './counter';
 import { renderPagesContainer } from './pagination';
+import { rowEditHandler } from './edit';
+import { modalOpened } from '../modals/modal';
 
 function formatPhoneNumber(phone_number: string): string {
 	return phone_number.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '+7 $1 $2-$3-$4');
 }
 
+function removeRow(table: HTMLDivElement, id: string) {
+	const row = table.querySelector(`[data-id="${id}"]`) as HTMLDivElement;
+	if (!row) return;
+
+	const deleteButton = row.querySelector(
+		'[data-delete-button]'
+	) as HTMLButtonElement;
+
+	row.removeEventListener('click', rowEditHandler);
+	deleteButton.removeEventListener('click', removeEntryHandler);
+}
+
 function removeEntryHandler(evt: MouseEvent): void {
+	if (modalOpened) return;
+
 	const target = (evt.target as HTMLElement).closest(
 		'[data-delete-button]'
 	) as HTMLButtonElement;
+
+	const table = target?.closest('[data-table]') as HTMLDivElement;
 
 	const key = target?.getAttribute('data-delete-button');
 
@@ -21,10 +39,10 @@ function removeEntryHandler(evt: MouseEvent): void {
 		return;
 	}
 
+	removeRow(table, key);
+
 	directoryStore.deleteEntry(parseInt(key));
 	updateCounter(directoryStore.list.length);
-
-	target.removeEventListener('click', removeEntryHandler);
 
 	renderTable('#table-body');
 }
@@ -53,6 +71,7 @@ function renderTableRow(entry: DirectoryEntry): HTMLDivElement {
 
 	row.appendChild(deleteButton);
 
+	row.addEventListener('click', rowEditHandler);
 	deleteButton.addEventListener('click', removeEntryHandler);
 
 	return row;
@@ -89,10 +108,19 @@ export function renderTable(tableBodySelector: string): void {
 
 	renderPagesContainer();
 
-	tableBody.innerHTML = '';
+	const rows = tableBody.querySelectorAll(
+		'[data-id]'
+	) as NodeListOf<HTMLDivElement>;
+
+	rows.forEach((row) => removeRow(tableBody, row.dataset.id!));
+
+	const newTable = document.createElement('div');
 
 	entries.forEach((entry) => {
 		const tableRow = renderTableRow(entry);
-		tableBody.appendChild(tableRow);
+		newTable.appendChild(tableRow);
 	});
+
+	tableBody.innerHTML = '';
+	tableBody.append(...newTable.childNodes);
 }

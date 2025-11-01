@@ -47,7 +47,7 @@
     margin-bottom: 8px;
 }
 
-.add-modal {
+.entry-modal {
     width: 600px;
     max-width: calc(100vw - 16px);
     max-height: calc(100vh - 16px);
